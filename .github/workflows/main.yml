@@ -1,0 +1,41 @@
+name: Update README
+
+on:
+  push:
+    paths:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Generate README
+      run: |
+        echo "| Folder Name | Reference | GLB File | Preview |" > README.md
+        echo "| ----------- | --------- | -------- | ------- |" >> README.md
+        for dir in $(ls); do
+          if [ -d "$dir" ]; then
+            for subdir in $(ls $dir); do
+              if [ -d "$dir/$subdir" ]; then
+                for file in $(ls "$dir/$subdir"); do
+                  echo "| $dir | $subdir | [$file]($dir/$subdir/$file) | ![Preview]($dir/$subdir/preview.png) |" >> README.md
+                done
+              fi
+            done
+          fi
+        done
+
+    - name: Commit changes
+      uses: actions/github-script@0.8.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      script: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git add README.md
+        git commit -m "Update README with file list"
+        git push
