@@ -32,7 +32,6 @@ jobs:
         done
 
     - name: Commit changes
-      uses: actions/github-scripts@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GIT_COMMITTER_NAME: GitHub Action
